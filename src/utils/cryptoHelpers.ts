@@ -36,7 +36,7 @@ function generatePassword(
 ): string {
     const password = randomPassword({
         length,
-                characters
+        characters
     })
 
     return password

@@ -1,11 +1,14 @@
+import { IUser } from '@root/interfaces';
 import mongoose, { Schema } from 'mongoose'
 
 const schema = new Schema(
     {
-        name: { type: String, required: true },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        password: { type: String, required: true },
         studentId: { type: String, required: true, unique: true },
-        rating: { type: Number, required: true },
-        courseReviews: [
+        verified: { type: Boolean, default: false },
+        reviews: [
             {
                 reviewID: { type: Schema.Types.ObjectId, ref: 'Review' },
             },
@@ -20,4 +23,4 @@ const modelName = 'User';
 const collectionName = 'users';
 
 
-export default mongoose.primary.model(modelName, schema, collectionName);
+export default mongoose.primary.model<IUser>(modelName, schema, collectionName);
