@@ -74,4 +74,4 @@ reviewSchema.pre('save', async function (next) {
 //     const reviews = await mongoose.primary.model('Review').find({ reviewedStudent: review.reviewedStudent });
 //     let rating = 0;
 
-//     export default mongoose.primary.model<IReview>(modelName, reviewSchema, collectionName);
+export default mongoose.primary.model<IReview>(modelName, reviewSchema, collectionName);
