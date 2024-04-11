@@ -8,6 +8,7 @@ const schema = new Schema(
         password: { type: String, required: true },
         studentId: { type: String, required: true, unique: true },
         verified: { type: Boolean, default: false },
+        rating: { type: Number, default: 0 },
         reviews: [
             {
                 reviewID: { type: Schema.Types.ObjectId, ref: 'Review' },

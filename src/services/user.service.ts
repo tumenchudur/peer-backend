@@ -18,7 +18,7 @@ const updateUser = async (id: Types.ObjectId, data: IUserCreate): Promise<IUser>
 }
 
 const getUsers = async (search: string): Promise<IUser[]> => {
-    const result = await User.find({ $or: [{ firstname: { $regex: search, $options: 'i' } }, { lastname: { $regex: search, $options: 'i' } }, { studentId: { $regex: search, $options: 'i' } }] })
+    const result = await User.find({ $or: [{ firstName: { $regex: search, $options: 'i' } }, { lastName: { $regex: search, $options: 'i' } }, { studentId: { $regex: search, $options: 'i' } }] })
     return result
 }
 
@@ -35,13 +35,31 @@ const getUserById = async (id: Types.ObjectId): Promise<IUser> => {
     return result
 }
 
-
+const getReviews = async (id: Types.ObjectId): Promise<IUser[]> => {
+    const result = await User.aggregate([
+        {
+            $match: {
+                _id: id
+            }
+        },
+        {
+            $lookup: {
+                from: 'reviews',
+                localField: '_id',
+                foreignField: 'reviewedStudent',
+                as: 'reviews'
+            }
+        }
+    ])
+    return result
+}
 const UserService = {
     createUser,
     updateUser,
     getUserById,
     getUsers,
     getUser,
+    getReviews
 };
 
 export default UserService;

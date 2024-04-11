@@ -106,6 +106,7 @@ export async function me(req: Request, res: Response): Promise<void> {
         new Types.ObjectId(user.claims._id)
     )
     res.respondWithData({
+        id: existUser._id,
         studentId: existUser.studentId,
         firstname: existUser.firstName || null,
         lastname: existUser.lastName || null,
