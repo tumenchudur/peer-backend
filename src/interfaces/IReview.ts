@@ -18,7 +18,6 @@ export interface IBaseReview extends Document {
     problemSolving: number
     creativity: number
     leadership: number
-
     comment: string
 
 }
@@ -29,10 +28,10 @@ export interface IReviewCreate {
     author: IUser['_id']
     course: ICourse['_id']
     reviewedStudent: IUser['_id']
-    communication: ISkillScore
-    teamwork: ISkillScore
-    problemSolving: ISkillScore
-    creativity: ISkillScore
-    leadership: ISkillScore
+    communication: number
+    teamwork: number
+    problemSolving: number
+    creativity: number
+    leadership: number
     comment: string
 }

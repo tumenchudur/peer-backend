@@ -9,6 +9,11 @@ const schema = new Schema(
         studentId: { type: String, required: true, unique: true },
         verified: { type: Boolean, default: false },
         rating: { type: Number, default: 0 },
+
+        skills: {
+            type: Array,
+            default: []
+        },
         reviews: [
             {
                 reviewID: { type: Schema.Types.ObjectId, ref: 'Review' },

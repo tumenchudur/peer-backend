@@ -35,13 +35,11 @@ export async function login(req: Request, res: Response): Promise<void> {
             exp: Math.floor(Date.now() + 864000),
             iat: Math.floor(Date.now() / 1000),
             claims: {
-                user: {
-                    _id: user._id,
-                    studentId: user.studentId,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    verified: user.verified
-                }
+                _id: user._id,
+                studentId: user.studentId,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                verified: user.verified
             }
         })
 
