@@ -7,7 +7,8 @@ export interface IBaseUser extends Document {
     password: string;
     rating: number;
     verified: boolean;
-    reviews: [];
+    skills: { type: string, rating: number }[]
+    reviews: any[];
 }
 
 export interface IUser extends IBaseUser, Document { }

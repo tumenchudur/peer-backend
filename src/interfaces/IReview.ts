@@ -30,6 +30,7 @@ export interface IReviewCreate {
     reviewedStudent: IUser['_id']
     communication: number
     teamwork: number
+    rating: number
     problemSolving: number
     creativity: number
     leadership: number
