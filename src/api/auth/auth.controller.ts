@@ -100,6 +100,7 @@ export async function register(req: Request, res: Response): Promise<void> {
 
 export async function me(req: Request, res: Response): Promise<void> {
     const { user } = req
+
     const existUser = await UserService.getUserById(
         new Types.ObjectId(user.claims._id)
     )

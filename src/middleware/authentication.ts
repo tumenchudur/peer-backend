@@ -1,20 +1,15 @@
-// import config from '@root/config'
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'express-jwt'
 import jwksRsa from 'jwks-rsa'
-// import jose from 'node-jose'
-// import fs from 'fs'
+import config from '@root/config'
 
-// const JWKeys = fs.readFileSync('Keys.json')
-// const rsaKeys = JSON.parse(JWKeys.toString());
-// console.log("🚀🚀🚀🚀🚀 ~ rsaKeys:", rsaKeys)
 
 const checkJwt = jwt({
     secret: jwksRsa.expressJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 100,
-        jwksUri: `http://18.138.55.47:3080/api/v1/auth/jwks`
+        jwksUri: `${config.api.url}/api/v1/auth/jwks`
     }),
     // issuer: config.oauth.host,
     algorithms: ['RS256']

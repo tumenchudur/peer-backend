@@ -30,6 +30,7 @@ const config = {
      * API configs
      */
     api: {
+        url: process.env.API_URL,
         prefix: '/api/v1'
     },
 

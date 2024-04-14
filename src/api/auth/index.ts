@@ -7,13 +7,14 @@ import {
     register,
     getJWKSKeys,
 } from './auth.controller'
+import authenticationMiddleware from '@root/middleware/authentication'
 
 
 const AuthRouter = Router()
 
 AuthRouter.post('/login', asyncHandler(login))
 AuthRouter.post('/register', asyncHandler(register))
-AuthRouter.post('/me', asyncHandler(me))
+AuthRouter.get('/me', authenticationMiddleware.checkJwt, asyncHandler(me))
 AuthRouter.get('/jwks', asyncHandler(getJWKSKeys))
 
 export default AuthRouter
