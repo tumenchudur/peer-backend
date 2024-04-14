@@ -18,40 +18,37 @@ export async function createReview(req: Request, res: Response): Promise<void> {
 
     const { user } = req;
 
-    const data: IReviewCreate = {
-        author: user.claims._id,
-        reviewedStudent,
-        rating: 0,
-        course,
-        communication,
-        teamwork,
-        problemSolving,
-        creativity,
-        leadership,
-        comment,
-    };
-
     try {
 
-        const review = new Review(data);
 
-        review.rating = Math.round((review.communication + review.teamwork + review.problemSolving + review.creativity + review.leadership) / 5 * 100) / 100;
-
-        // check if the user has already reviewed the student with the same course
 
         const existingReview = await Review.findOne({ author: user.claims._id, reviewedStudent, course });
         if (existingReview) {
             throw new Error('You have already reviewed this student for this course');
         }
 
-        const savedReview = await review.save();
+        const data: IReviewCreate = {
+            author: user.claims._id,
+            rating: 0,
+            reviewedStudent,
+            course,
+            communication,
+            teamwork,
+            problemSolving,
+            creativity,
+            leadership,
+            comment
 
+        }
+        data.rating = Math.round((data.communication + data.teamwork + data.problemSolving + data.creativity + data.leadership) / 5 * 100) / 100;
+
+        // const savedReview = await review.save();
+        const savedReview = await ReviewService.createReview(data);
         // Save the review with calculated rating
 
-        // Update user rating and skills after saving
-        const updatedUser = await updateReviewedUser(savedReview);
 
-        res.respondWithData(savedReview, { user: updatedUser }); // Send response with review and updated user
+        const userUpdate = await UserService.addReview(reviewedStudent)
+        res.respondWithData(savedReview); // Send response with review and updated user
     } catch (error) {
         res.internalError(error);
     }
@@ -88,12 +85,24 @@ async function updateReviewedUser(review: IReview): Promise<IUser> {
     return user;
 }
 
+// getMyReviews
+
+export async function getMyReviews(req: Request, res: Response): Promise<void> {
+    const { user } = req;
+
+    try {
+        const reviews = await ReviewService.getReviews({ author: user.claims._id });
+        res.respondWithData(reviews);
+    } catch (error) {
+        res.internalError(error);
+    }
+}
 
 export async function getReviews(req: Request, res: Response): Promise<void> {
     const { filter } = req.query
 
     try {
-        const result = await ReviewService.getReviews(JSON.parse(filter as string))
+        const result = await ReviewService.getReviews((filter))
         res.respondWithData(result)
     }
     catch (error) {

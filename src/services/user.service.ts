@@ -4,7 +4,7 @@ import {
     IUserLogin,
 
 } from "@root/interfaces";
-import { User } from "@root/models";
+import { Review, User } from "@root/models";
 import { Types } from "mongoose";
 
 const createUser = async (data: IUserCreate): Promise<IUser> => {
@@ -53,12 +53,55 @@ const getReviews = async (id: Types.ObjectId): Promise<IUser[]> => {
     ])
     return result
 }
+
+const addReview = async (id: Types.ObjectId): Promise<any> => {
+
+    const reviews = await Review.find({ reviewedStudent: id })
+    if (reviews.length === 0) {
+        throw new Error('No reviews found')
+    }
+
+    let totalRating = 0
+    const skills = {} as { [key: string]: number }
+
+    for (const review of reviews) {
+        totalRating += review.rating
+        skills['communication'] = (skills[review.communication] || 0) + review.communication
+        skills['teamwork'] = (skills[review.teamwork] || 0) + review.teamwork
+        skills['problemSolving'] = (skills[review.problemSolving] || 0) + review.problemSolving
+        skills['creativity'] = (skills[review.creativity] || 0) + review.creativity
+        skills['leadership'] = (skills[review.leadership] || 0) + review.leadership
+    }
+
+    const rating = Math.round((totalRating / reviews.length) * 100) / 100
+
+
+    const skillOb = Object.entries(skills).map(([type, rating]) => ({ type, rating: rating / reviews.length }))
+
+    const user = await User.updateOne(
+        { _id: id },
+        {
+            $set: {
+                rating,
+                reviews: reviews.map(review => review._id),
+                skills: skillOb
+            }
+        }
+    )
+
+    return user
+}
+
+
+
+
 const UserService = {
     createUser,
     updateUser,
     getUserById,
     getUsers,
     getUser,
+    addReview,
     getReviews
 };
 
