@@ -43,7 +43,7 @@ export async function login(req: Request, res: Response): Promise<void> {
             }
         })
 
-        token = await jose.JWS.createSign(opt, key).update(payload).final()
+        token = await jose.JWS.createSign(opt, key).update(payload, "utf8").final()
     } catch (error) {
         if (error == 'forbidden') {
             res.resourceForbidden()
@@ -99,23 +99,37 @@ export async function register(req: Request, res: Response): Promise<void> {
 }
 
 export async function me(req: Request, res: Response): Promise<void> {
-    const { user } = req
+    const { user } = req;
 
-    const existUser = await UserService.getUserById(
-        new Types.ObjectId(user.claims._id)
-    )
-    res.respondWithData({
-        id: existUser._id,
-        studentId: existUser.studentId,
-        firstname: existUser.firstName || null,
-        lastname: existUser.lastName || null,
-    })
+    try {
 
+        const existUser = await UserService.getUserById(new Types.ObjectId(user.claims._id));
+
+        if (!existUser) {
+            throw new Error("User not found");
+        }
+
+        res.respondWithData({
+            id: existUser._id,
+            studentId: existUser.studentId || null,
+            firstname: existUser.firstName || null,
+            lastname: existUser.lastName || null,
+        });
+    } catch (error) {
+        console.error("Error in me function:", error);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
 }
+
 export async function getJWKSKeys(req: Request, res: Response): Promise<void> {
-    const ks = fs.readFileSync('Keys.json')
+    try {
+        const ks = fs.readFileSync('Keys.json');
 
-    const keyStore = await jose.JWK.asKeyStore(ks.toString())
+        const keyStore = await jose.JWK.asKeyStore(ks.toString());
 
-    res.send(keyStore.toJSON())
+        res.send(keyStore.toJSON());
+    } catch (error) {
+        console.error("Error in getJWKSKeys function:", error);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
 }
