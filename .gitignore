@@ -50,3 +50,7 @@ pdf
 #lock files
 
 bun.lockb
+
+#ignore package-lock.json
+
+package-lock.json
