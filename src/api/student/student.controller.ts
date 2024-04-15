@@ -31,8 +31,11 @@ export async function getStudent(req: Request, res: Response): Promise<void> {
 export async function getStudents(req: Request, res: Response): Promise<void> {
     try {
         const search = (req.query.search as string)?.trim() || '';
+        // req.query.rating
+        const rating = (req.query.rating as string)?.trim() || '';
 
-        const result = await UserService.getUsers(search);
+
+        const result = await UserService.getUsers({ search, rating });
 
         if (!result) {
             res.respondWithData([]);
@@ -46,6 +49,15 @@ export async function getStudents(req: Request, res: Response): Promise<void> {
         });
 
         res.respondWithData(students);
+    } catch (error) {
+        res.internalError(error);
+    }
+}
+
+export async function getUserWithMostReviewsGiven(req: Request, res: Response): Promise<void> {
+    try {
+        const result = await UserService.getUserWithMostReviewsGiven();
+        res.respondWithData(result);
     } catch (error) {
         res.internalError(error);
     }

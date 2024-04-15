@@ -17,8 +17,17 @@ const updateUser = async (id: Types.ObjectId, data: IUserCreate): Promise<IUser>
     return result
 }
 
-const getUsers = async (search: string): Promise<IUser[]> => {
-    const result = await User.find({ $or: [{ firstName: { $regex: search, $options: 'i' } }, { lastName: { $regex: search, $options: 'i' } }, { studentId: { $regex: search, $options: 'i' } }] })
+const getUsers = async (filter: any): Promise<IUser[]> => {
+
+    const search = filter.search || ''
+    const rating = filter.rating || ''
+
+    let result
+    if (rating === 'highest') {
+
+        result = await User.find().sort({ rating: -1 }).limit(10)
+        return result
+    } else { result = await User.find({ $or: [{ firstName: { $regex: search, $options: 'i' } }, { lastName: { $regex: search, $options: 'i' } }, { studentId: { $regex: search, $options: 'i' } }] }) }
     return result
 }
 
@@ -92,6 +101,65 @@ const addReview = async (id: Types.ObjectId): Promise<any> => {
     return user
 }
 
+// get user who gave the most review
+const getUserWithMostReviewsGiven = async (): Promise<IUser[] | null> => {
+
+
+    const result = await User.aggregate([{
+        $lookup: {
+            from: 'reviews',
+            localField: '_id',
+            foreignField: 'author',
+            as: 'reviews',
+        },
+    },
+    {
+        $unwind: '$reviews',
+    },
+    {
+        $group: {
+            _id: '$reviews.author',
+            reviewsCount: { $sum: 1 },
+        },
+    },
+    {
+        $sort: { reviewsCount: -1 },
+    },
+    {
+        $limit: 20,
+    },
+    {
+        $lookup: {
+            from: 'users',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'user',
+        },
+    },
+    {
+        $unwind: '$user',
+    },
+    {
+        $project: {
+            reviewsCount: '$reviewsCount',
+            user: {
+                _id: '$user._id',
+                firstName: '$user.firstName',
+                lastName: '$user.lastName',
+                studentId: '$user.studentId',
+                reviews: '$user.reviews',
+
+            }
+        }
+    }]);
+
+    if (result.length === 0) {
+        return null;
+    }
+    // 
+    return result;
+
+};
 
 
 
@@ -102,7 +170,8 @@ const UserService = {
     getUsers,
     getUser,
     addReview,
-    getReviews
+    getReviews,
+    getUserWithMostReviewsGiven
 };
 
 export default UserService;
