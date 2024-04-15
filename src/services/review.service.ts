@@ -43,7 +43,7 @@ const ReviewService = {
     getReviews,
     getReviewById,
     updateReview,
-    deleteReview
+    deleteReview,
 }
 
 export default ReviewService

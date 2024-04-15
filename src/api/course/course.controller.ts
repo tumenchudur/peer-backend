@@ -63,3 +63,13 @@ export async function getCourseById(req: Request, res: Response): Promise<void> 
         res.internalError(error)
     }
 }
+
+export async function getMostReviewedCourses(req: Request, res: Response): Promise<void> {
+    try {
+        const result = await CourseService.getMostReviewedCourses()
+        res.respondWithData(result)
+    }
+    catch (error) {
+        res.internalError(error)
+    }
+}

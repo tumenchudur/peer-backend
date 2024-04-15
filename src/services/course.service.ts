@@ -1,4 +1,4 @@
-import { Course } from '@root/models'
+import { Course, Review } from '@root/models'
 import { ICourseCreate, ICourse } from '@root/interfaces';
 import { Types } from 'mongoose'
 
@@ -23,11 +23,48 @@ export const createManyCourses = async (courses: ICourseCreate[]): Promise<ICour
 
     return result
 }
+export const getMostReviewedCourses = async (): Promise<any> => {
+    const result = await Review.aggregate([
+        {
+            $group: {
+                _id: '$course',
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { count: -1 }
+        },
+        {
+            $lookup: {
+                from: 'courses',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'course'
+            }
+        },
+        {
+            $unwind: '$course'
+        },
+        {
+            $project: {
+                _id: 0,
+                course: 1,
+                count: 1
+            }
+        },
+        {
+            $limit: 5
+        }
+    ])
+    return result
+}
+
 const CourseService = {
     createCourse,
     getAllCourses,
     getCourseById,
-    createManyCourses
+    createManyCourses,
+    getMostReviewedCourses
 }
 
 export default CourseService
